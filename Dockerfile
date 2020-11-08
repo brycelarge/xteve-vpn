@@ -40,6 +40,7 @@ RUN \
 # env
 ENV \
     XTEVE_BRANCH=master \
+    XTEVE_PORT=34400 \
     XTEVE_DEBUG=0 \
     TZ=Africa/Johannesburg \
 	NAME_SERVERS=8.8.8.8,8.8.4.4 \
