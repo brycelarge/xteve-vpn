@@ -19,6 +19,10 @@ else
         VPN_PROVIDER_CONFIGS="/etc/openvpn/${VPN_PROVIDER}/tcp"
     else
         VPN_PROVIDER_CONFIGS="/etc/openvpn/${VPN_PROVIDER}"
+        # allow for a config file without the _udp (protocol) to be used
+        if [[ ! -f "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn" ]] && [[ -f "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}_${OPENVPN_PROTOCOL,,}.ovpn" ]]; then
+            VPN_CONFIG="${VPN_CONFIG}_${OPENVPN_PROTOCOL,,}"
+        fi
     fi
 fi
 
@@ -29,8 +33,8 @@ if [[ ! -d "${VPN_PROVIDER_CONFIGS}" ]]; then
 fi
 
 if [[ "${VPN_PROVIDER}" == "surfshark" ]] && [[ ! -f "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn" ]]; then
-    # This allows us to use a list similar to PIA list file and try and match it to surfsharks config file.
-    SURFSHARK_CLUSTERS_URL='https://account.surfshark.com/api/v1/server/clusters'
+    # This allows us to use a list similar to PIA list file and try and match it to surfsharks config file. Allows for a somewhat quick transition from PIA to Surfshark
+    SURFSHARK_CLUSTERS_URL='https://my.surfshark.com/vpn/api/v1/server/clusters'
     LOCATIONS=$(curl -s "${SURFSHARK_CLUSTERS_URL}" | jq -r '.[] | [.countryCode,.location,":",.location,":",.country,":",.connectionName] | @sh' | tr -d "'")
     readarray -t LOCATIONS_ARRAY <<< "${LOCATIONS//,/$'\n'}"
 
