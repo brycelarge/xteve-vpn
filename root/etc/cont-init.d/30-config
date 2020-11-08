@@ -1,0 +1,12 @@
+#!/usr/bin/with-contenv bash
+
+# create directories
+mkdir -p \
+    /config/{cache,conf,backup,cron,openvpn} \
+    /tmp/xteve
+
+# permissions
+chown -R abc:abc \
+    /tmp/xteve \
+    /config \
+    /config/*
