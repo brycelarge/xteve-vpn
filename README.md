@@ -8,9 +8,9 @@ xTeVe is a M3U proxy server for Plex, Emby and any client and provider which sup
 
 xTeVe emulates a SiliconDust HDHomeRun OTA tuner, which allows it to expose IPTV style channels to software, which would not normally support it.
 
-OpenVPN has been added to the container to allow users who have issues with their ISP shaping IPTV to bypass the shaping using a VPN
+OpenVPN has been added to this container to allow users to bypass shaping using a VPN connection. Hopefully this will help others as it has done so for me.
 
-I built this VPN version to bypass my ISP shaping during peak usage times. In the evenings I noticed my IPTV channels were freezing and timing out. After some back and forth between myself and the IPTV provider I came to the realisation that its my ISP that's the cause. Hopefully it helps others out there as its helped me.
+Credits to the programmers who did an amazing job on xTeVe, all I did was put this docker together for my needs.
 
 ## Usage
 
