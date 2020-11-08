@@ -10,6 +10,8 @@ xTeVe emulates a SiliconDust HDHomeRun OTA tuner, which allows it to expose IPTV
 
 OpenVPN has been added to the container to allow users who have issues with their ISP shaping IPTV to bypass the shaping using a VPN
 
+I built this VPN version to bypass my ISP shaping during peak usage times. In the evenings I noticed my IPTV channels were freezing and timing out. After some back and forth between myself and the IPTV provider I came to the realisation that its my ISP that's the cause. Hopefully it helps others out there as its helped me.
+
 ## Usage
 
 Here are some example snippets to help you get started creating a container.
