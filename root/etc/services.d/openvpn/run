@@ -26,8 +26,7 @@ fi
     --disable-occ \
     --auth-nocache \
     --mute-replay-warnings \
-    --pull-filter ignore 'ping' \
-    --pull-filter ignore 'ping-restart' \
+    –-persist-tun \
     --pull-filter ignore 'route-ipv6' \
     --pull-filter ignore 'ifconfig-ipv6' \
     --pull-filter ignore 'tun-ipv6' \
