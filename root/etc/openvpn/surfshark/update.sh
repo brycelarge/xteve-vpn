@@ -14,10 +14,6 @@ for CONFIG_FILE in /etc/openvpn/surfshark/*.ovpn; do
 
     /etc/scripts/openvpn-config-clean.sh "${CONFIG_FILE}"
 
-    sed -i '/ping\ 15/d' "${CONFIG_FILE}"
-    sed -i '/ping-restart\ 0/d' "${CONFIG_FILE}"
-    sed -i '/ping-exit\ 0/d' "${CONFIG_FILE}"
-    sed -i '/ping-timer-rem/d' "${CONFIG_FILE}"
     sed -i "s/AES-256-CBC/AES-256-GCM/g" "${CONFIG_FILE}"
     sed -i "s/auth-user-pass.*/auth-user-pass \/config\/openvpn\/surfshark-openvpn-credentials.txt/g" "${CONFIG_FILE}"
 done
