@@ -121,10 +121,10 @@ https://www.speedtest.net/insights/blog/introducing-speedtest-cli/
 
 You will need to ssh into the running container to run speedtest cli
 
-```docker exec -ti xteve bash```
+```docker exec -ti xteve-vpn bash```
 
 Or from host
 
-```docker exec -t xteve sh -c 'speedtest --accept-license --accept-gdp'```
+```docker exec -t xteve-vpn sh -c 'speedtest --accept-license --accept-gdp'```
 
 Enjoy!
