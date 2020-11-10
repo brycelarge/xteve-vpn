@@ -15,12 +15,6 @@ sed -i '/^persist-tun/d' "${1}"
 # remove reneg-sec from ovpn file if present, this is removed to prevent re-checks and dropouts
 sed -i '/^reneg-sec.*/d' "${1}"
 
-# remove up script from ovpn file if present, this is removed as we do not want any other up/down scripts to run
-sed -i '/^up\s.*/d' "${1}"
-
-# remove down script from ovpn file if present, this is removed as we do not want any other up/down scripts to run
-sed -i '/^down\s.*/d' "${1}"
-
 # remove windows specific openvpn options
 sed -i '/^route-method exe/d' "${1}"
 sed -i '/^service\s.*/d' "${1}"
