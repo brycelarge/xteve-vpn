@@ -44,7 +44,7 @@ ENV \
     XTEVE_DEBUG=0 \
     DEBUG=false \
     TZ=Africa/Johannesburg \
-	NAME_SERVERS=8.8.8.8,8.8.4.4 \
+	NAME_SERVERS=209.222.18.222,84.200.69.80,37.235.1.174,1.1.1.1,209.222.18.218,37.235.1.177,84.200.70.40,1.0.0.1 \
     OPENVPN_PROVIDER='**None**' \
     OPENVPN_CONFIG='**None**' \
     OPENVPN_USERNAME='**None**' \
