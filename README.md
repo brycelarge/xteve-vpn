@@ -44,6 +44,7 @@ Container images are configured using parameters passed at runtime (such as thos
 | `-e PUID=1000` | for UserID - see below for explanation |
 | `-e PGID=1000` | for GroupID - see below for explanation |
 | `-e XTEVE_DEBUG=0` | Set xTeVe debug level [ 0-3 ] Default: 0=OFF |
+| `-e DEBUG=false` | Set container debug [ true or false ] Default: false |
 | `-e XTEVE_BRANCH=master` | Set xTeVe git branch [ master|beta ] Default: master  |
 | `-v /config` | xTeVe library location. |
 | `-v /tmp/xteve` | xTeVe Location for the buffer files. |
@@ -98,7 +99,7 @@ If you are running the VPN then use bridge mode otherwise you will have issues o
 | `-e OPENVPN_PROVIDER=PIA` | VPN Provider - SURFSHARK, PIA or CUSTOM |
 | `-e OPENVPN_OPTIONS=--ping 60 --ping-restart 180` | Custom OpenVPN options (Leave blank if your unsure, this is just an example) |
 | `-e OPENVPN_PROTOCOL=udp` | VPN Protocol udp or tcp |
-| `-e CREATE_TUN_DEVICE=false` | Should the container create /dev/net or are you mounting it |
+| `-e CREATE_TUN_DEVICE=true` | Should the container create /dev/net or are you mounting it |
 | `-e LOCAL_NETWORK=192.168.0.0/24` | Your local lan network |
 
 #### PIA config files can be found here
