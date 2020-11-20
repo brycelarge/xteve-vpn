@@ -42,13 +42,15 @@ ENV \
     XTEVE_BRANCH=master \
     XTEVE_PORT=34400 \
     XTEVE_DEBUG=0 \
+    DEBUG=false \
     TZ=Africa/Johannesburg \
 	NAME_SERVERS=8.8.8.8,8.8.4.4 \
     OPENVPN_PROVIDER='**None**' \
     OPENVPN_CONFIG='**None**' \
     OPENVPN_USERNAME='**None**' \
     OPENVPN_PASSWORD='**None**' \
-    OPENVPN_OPTIONS='--ping 60 --ping-restart 180' \
+    CREATE_TUN_DEVICE=true \
+    OPENVPN_OPTIONS='' \
     OPENVPN_PROTOCOL='udp'
 
 # Timezone (TZ):  Add the tzdata package and configure for EST timezone.
