@@ -13,6 +13,12 @@ VPN_CONFIG="$(echo ${OPENVPN_CONFIG} | sed 's/\b.ovpn\b//g')"
 # Get the directory where the providers config files sit
 if [[ "${VPN_PROVIDER}" == "custom" ]]; then
     VPN_PROVIDER_CONFIGS="/config/openvpn"
+    # If no file has been specified or the file specified does not exist in the custom directory then find the first file in that directory
+    if [[ ! -f "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn" ]]; then
+        VPN_CONFIG=$(basename -- $(find ${VPN_PROVIDER_CONFIGS} -maxdepth 1 -name "*.ovpn" -print -quit) | sed 's/\b.ovpn\b//g')
+    fi
+
+    # If the file exists then lets clean it and link our credentials files
     if [[ -f "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn" ]]; then
         /etc/scripts/openvpn-config-clean.sh "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn"
         sed -i "s/auth-user-pass.*/auth-user-pass \/config\/openvpn\/custom-openvpn-credentials.txt/g" "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn"
