@@ -41,6 +41,7 @@ Container images are configured using parameters passed at runtime (such as thos
 | Parameter | Function |
 | :----: | --- |
 | `--net=host` | Use Host Networking |
+| `-p 34400:34400` | Port needs to be passed from host to container unless your not using OpenVPN and your in host mode |
 | `-e PUID=1000` | for UserID - see below for explanation |
 | `-e PGID=1000` | for GroupID - see below for explanation |
 | `-e XTEVE_DEBUG=0` | Set xTeVe debug level [ 0-3 ] Default: 0=OFF |
@@ -53,16 +54,6 @@ Container images are configured using parameters passed at runtime (such as thos
 
 For all of our images we provide the ability to override the default umask settings for services started within the containers using the optional `-e UMASK=022` setting.
 Keep in mind umask is not chmod it subtracts from permissions based on it's value it does not add. Please read up [here](https://en.wikipedia.org/wiki/Umask) before asking for support.
-
-## Optional Parameters
-
-If you want to run the container in bridge network mode (instead of the recommended host network mode) you will need to specify ports.
-
-In bridge mode the docker container will assign it's own dockernet ip address (usually in the 172.17.x network).
-
-```
-  -p 34400:34400
-```
 
 ## User / Group Identifiers
 
