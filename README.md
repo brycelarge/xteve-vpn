@@ -91,7 +91,8 @@ If you are running the VPN then use bridge mode otherwise you will have issues o
 | `-e OPENVPN_OPTIONS=--ping 60 --ping-restart 180` | Custom OpenVPN options (Leave blank if your unsure, this is just an example) |
 | `-e OPENVPN_PROTOCOL=udp` | VPN Protocol udp or tcp (Not required when using CUSTOM provider) |
 | `-e CREATE_TUN_DEVICE=true` | Should the container create /dev/net or are you mounting it |
-| `-e LOCAL_NETWORK=192.168.0.0/24` | Your local lan network |
+| `-e LOCAL_NETWORK=192.168.0.0/24` | Your local lan network (Required in order to reach xTeVe web gui) |
+| `-e NAME_SERVERS=8.8.8.8,8.8.4.4` | Containers DNS servers to use (Not required by default) |
 
 #### PIA config files can be found here
 
