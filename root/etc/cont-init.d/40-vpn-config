@@ -21,6 +21,7 @@ else
     echo "${OPENVPN_USERNAME}" > "/config/openvpn/${VPN_PROVIDER}-openvpn-credentials.txt"
     echo "${OPENVPN_PASSWORD}" >> "/config/openvpn/${VPN_PROVIDER}-openvpn-credentials.txt"
     chmod 600 "/config/openvpn/${VPN_PROVIDER}-openvpn-credentials.txt"
+    chown abc:abc "/config/openvpn/${VPN_PROVIDER}-openvpn-credentials.txt"
 
     USERNAME_CHAR_CHECK=$(echo "${OPENVPN_USERNAME}" | grep -E -o -m 1 '[^a-zA-Z0-9@]+')
     if [[ ! -z "${USERNAME_CHAR_CHECK}" ]]; then
