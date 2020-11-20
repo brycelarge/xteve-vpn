@@ -13,6 +13,10 @@ VPN_CONFIG="$(echo ${OPENVPN_CONFIG} | sed 's/\b.ovpn\b//g')"
 # Get the directory where the providers config files sit
 if [[ "${VPN_PROVIDER}" == "custom" ]]; then
     VPN_PROVIDER_CONFIGS="/config/openvpn"
+    if [[ -f "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn" ]]; then
+        /etc/scripts/openvpn-config-clean.sh "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}"
+        sed -i "s/auth-user-pass.*/auth-user-pass \/config\/openvpn\/pia-openvpn-credentials.txt/g" "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}"
+    fi
 else
     # Set the pia config file to tcp directory if the protocol is tcp
     if [[ "${VPN_PROVIDER}" == "pia" && "${OPENVPN_PROTOCOL,,}" == "tcp" ]]; then
