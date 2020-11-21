@@ -13,8 +13,12 @@ VPN_CONFIG="$(echo ${OPENVPN_CONFIG} | sed 's/\b.ovpn\b//g')"
 # Get the directory where the providers config files sit
 if [[ "${VPN_PROVIDER}" == "custom" ]]; then
     VPN_PROVIDER_CONFIGS="/config/openvpn"
+
     # If no file has been specified or the file specified does not exist in the custom directory then find the first file in that directory
     if [[ ! -f "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn" ]]; then
+        # Remove mac os files before we try find the first
+        rm -rf /config/openvpn/._*.ovpn
+
         VPN_CONFIG=$(basename -- $(find ${VPN_PROVIDER_CONFIGS} -maxdepth 1 -name "*.ovpn" -print -quit) | sed 's/\b.ovpn\b//g')
     fi
 
