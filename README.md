@@ -73,9 +73,9 @@ In this instance `PUID=1000` and `PGID=1000`, to find yours use `id user` as bel
 Webui can be found at `<your-ip>:34400/web`
 
 ## OpenVPN
-OpenVPN is built in but disabled by default. Currently the container has Surfshark and PIA config files built in so all that's needed is to specify the ovpn file name.
+OpenVPN is built in but disabled by default. Currently the container has Surfshark, PIA and VyprVPN config files built in so all that's needed is to specify the ovpn file name with or without the .ovpn extension.
 
-Surfshark I have found to be the best for IPTV, less buffering but this could be different for you. I only tested with PIA and Surfshark as I had accounts with them, more can be added in the future. I have also added the ability to use other OpenVPN config files so you are not limited to PIA and Surfshark
+Surfshark I have found to be the best for IPTV, less buffering but this could be different for you. I only tested with PIA and Surfshark as I had accounts with them, more can be added in the future. I have also added the ability to use other OpenVPN config files so you are not limited to Surfshark, PIA or VyprVPN.
 
 If you are running the VPN then use bridge mode otherwise you will have issues on your host.
 
@@ -87,12 +87,12 @@ If you are running the VPN then use bridge mode otherwise you will have issues o
 | `-e OPENVPN_USERNAME=username` | Your VPN provider username |
 | `-e OPENVPN_PASSWORD=password` | Your VPN provider password |
 | `-e OPENVPN_CONFIG=Ca Toronto` | Configuration file for the VPN location (Not required when using CUSTOM provider, will find the first file in the openvn directory) |
-| `-e OPENVPN_PROVIDER=PIA` | VPN Provider - SURFSHARK, PIA or CUSTOM |
+| `-e OPENVPN_PROVIDER=PIA` | VPN Provider - SURFSHARK, PIA, VyprVPN or CUSTOM |
 | `-e OPENVPN_OPTIONS=--ping 60 --ping-restart 180` | Custom OpenVPN options (Leave blank if your unsure, this is just an example) |
-| `-e OPENVPN_PROTOCOL=udp` | VPN Protocol udp or tcp (Not required when using CUSTOM provider) |
+| `-e OPENVPN_PROTOCOL=udp` | VPN Protocol udp or tcp (Not needed when using CUSTOM provider) |
 | `-e CREATE_TUN_DEVICE=true` | Should the container create /dev/net or are you mounting it |
 | `-e LOCAL_NETWORK=192.168.0.0/24` | Your local lan network (Required in order to reach xTeVe web gui) |
-| `-e NAME_SERVERS=8.8.8.8,8.8.4.4` | Containers DNS servers to use (Not required by default) |
+| `-e NAME_SERVERS=209.222.18.222,209.222.18.218,37.235.1.174,37.235.1.177,1.1.1.1,1.0.0.1` | Containers DNS servers to use (Not required by default) Due to Google and OpenDNS supporting EDNS Client Subnet it is recommended NOT to use either of these |
 
 #### PIA config files can be found here
 
