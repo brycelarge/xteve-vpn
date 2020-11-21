@@ -102,6 +102,10 @@ https://www.privateinternetaccess.com/openvpn/openvpn.zip
 
 https://my.surfshark.com/vpn/api/v1/server/configurations
 
+#### VyprVPN config files can be found here
+
+https://support.vyprvpn.com/hc/article_attachments/360052617332/Vypr_OpenVPN_20200320.zip
+
 #### If you wish to use your own custom ovpn file and provider, just place your ovpn file in a folder called openvpn inside your config directory and change OPENVPN_PROVIDER=CUSTOM. An openvpn folder will be created automatically on the first boot
 
 OPENVPN_CONFIG does not need to be set when OPENVPN_PROVIDER=CUSTOM and you have placed your own ovpn file in the openvpn directory. The first found ovpn file will be used.
