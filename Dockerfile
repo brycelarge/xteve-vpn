@@ -60,7 +60,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # add local files
 COPY root/ /
 
-RUN /etc/openvpn/pia/update.sh && /etc/openvpn/surfshark/update.sh
+RUN /etc/openvpn/pia/update.sh && /etc/openvpn/surfshark/update.sh && /etc/openvpn/vyprvpn/update.sh
 
 # setup a health check to monitor OpenVPN
 HEALTHCHECK --interval=5m CMD /etc/scripts/healthcheck.sh
