@@ -63,7 +63,7 @@ COPY root/ /
 RUN /etc/openvpn/pia/update.sh && /etc/openvpn/surfshark/update.sh && /etc/openvpn/vyprvpn/update.sh
 
 # setup a health check to monitor OpenVPN
-HEALTHCHECK --interval=5m CMD /etc/scripts/healthcheck.sh
+HEALTHCHECK --interval=5m CMD /etc/scripts/health-check.sh
 
 # Configure container volume mappings
 VOLUME /config /tmp/xteve
