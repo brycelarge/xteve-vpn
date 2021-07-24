@@ -21,11 +21,7 @@ RUN \
     net-tools \
     bc && \
     echo "**** install speedtest cli ****" && \
-    export INSTALL_KEY=379CE192D401AB61 && \
-    export DEB_DISTRO=$(lsb_release -sc) && \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys $INSTALL_KEY && \
-    echo "deb https://ookla.bintray.com/debian ${DEB_DISTRO} main" | tee /etc/apt/sources.list.d/speedtest.list && \
-    apt-get update && \
+    curl -s https://install.speedtest.net/app/cli/install.deb.sh | bash && \
     apt-get install -y speedtest && \
     echo "**** install xTeVe ****" && \
     curl -L "https://github.com/xteve-project/xTeVe-Downloads/blob/master/xteve_linux_amd64.tar.gz?raw=true" -o /tmp/xteve_linux_amd64.tar.gz && \
