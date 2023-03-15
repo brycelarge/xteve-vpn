@@ -46,27 +46,24 @@ if [[ ! -d "${VPN_PROVIDER_CONFIGS}" ]]; then
     rm -rf /etc/services.d/openvpn && exit 1
 fi
 
+# This allows us to use a list similar to PIA list file and try and match it to surfsharks config file. Allows for a somewhat quick transition from PIA to Surfshark
 if [[ "${VPN_PROVIDER}" == "surfshark" ]] && [[ ! -f "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn" ]]; then
-    # This allows us to use a list similar to PIA list file and try and match it to surfsharks config file. Allows for a somewhat quick transition from PIA to Surfshark
-    SURFSHARK_CLUSTERS_URL='https://my.surfshark.com/vpn/api/v1/server/clusters'
-    LOCATIONS=$(curl -s "${SURFSHARK_CLUSTERS_URL}" | jq -r '.[] | [.countryCode,.location,":",.location,":",.country,":",.connectionName] | @sh' | tr -d "'")
-    readarray -t LOCATIONS_ARRAY <<< "${LOCATIONS//,/$'\n'}"
+    clustersData="$(curl -s "https://my.surfshark.com/vpn/api/v1/server/clusters" | jq -r .[])"
+    for country in $(echo "$clustersData" | jq -r '.countryCode'); do
+        locations=$(echo "$clustersData" | jq -r "select(.countryCode==\"$country\") | .location")
+        for location in $(echo $locations); do
+            NAME="${country}_${location}"
+            FILE=$(echo "$clustersData" | jq -r "select(.location==\"$location\") | .connectionName")
+            if [ ! -z "$FILE" ]; then
+                if [[ "$(echo $NAME | tr '[:upper:]' '[:lower:]')" == "${VPN_CONFIG}" ]] ]]; then
+                    VPN_CONFIG="$(echo "${FILE}" | sed -e 's/\<.ovpn\>//g')_${OPENVPN_PROTOCOL,,}"
 
-    ## Try match the config file to SURSHARKS config files
-    for i in "${!LOCATIONS_ARRAY[@]}"; do
-        IFS=: read -r -a VALUES <<< "${LOCATIONS_ARRAY[${i}]}"
-        CODE_AND_LOCATION=$(echo ${VALUES[0]} | sed 's/ *$//g')
-        LOCATION=$(echo ${VALUES[1]} | sed 's/ *$//g')
-        COUNTRY=$(echo ${VALUES[2]} | sed 's/ *$//g')
-        FILE=$(echo ${VALUES[3]} | sed 's/ *$//g')
-
-        if [[ "${CODE_AND_LOCATION}" == "${VPN_CONFIG}" ]] || [[ "${COUNTRY} ${LOCATION}" == "${VPN_CONFIG}" ]] || [[ "${COUNTRY}" == "${VPN_CONFIG}" ]]; then
-            VPN_CONFIG="$(echo "${FILE}" | sed -e 's/\<.ovpn\>//g')_${OPENVPN_PROTOCOL,,}"
-
-            if [[ "${DEBUG}" == "true" ]]; then
-                echo "[OpenVPN] ${VPN_CONFIG} found using the surfshark API" | ts '%Y-%m-%d %H:%M:%S'
+                    if [[ "${DEBUG}" == "true" ]]; then
+                        echo "[OpenVPN] ${VPN_CONFIG} found using the surfshark API" | ts '%Y-%m-%d %H:%M:%S'
+                    fi
+                fi
             fi
-        fi
+        done
     done
 fi
 
