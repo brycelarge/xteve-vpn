@@ -1,9 +1,21 @@
 #!/bin/bash
 
+if [[ "${OPENVPN_PROVIDER}" == "**None**" ]] || [[ -z "${OPENVPN_PROVIDER-}" ]]; then
+    echo "[OpenVPN] Provider not set. Exiting..." | ts '%Y-%m-%d %H:%M:%S'
+    exit 1
+fi
+
 # if network interface docker0 is present then we are running in host mode and thus must exit
 if [[ ! -z "$(ifconfig | grep docker0 || true)" ]]; then
-    echo "[OpenVPN] docker network type detected as 'Host', this will cause major issues, please stop the container and switch back to 'Bridge'. Exiting..."
-    rm -rf /etc/services.d/openvpn && exit 1
+    echo "[OpenVPN] docker network type detected as 'Host', this will cause major issues, please stop the container and switch back to 'Bridge'. Exiting..." | ts '%Y-%m-%d %H:%M:%S'
+    exit 1
+fi
+
+if [[ "${OPENVPN_USERNAME}" == "**None**" ]] || [[ "${OPENVPN_PASSWORD}" == "**None**" ]] ; then
+    if [[ ! -f "/config/openvpn/${VPN_PROVIDER}-openvpn-credentials.txt" ]] ; then
+        echo "[OpenVPN] credentials not set. Exiting." | ts '%Y-%m-%d %H:%M:%S'
+        exit 1
+    fi
 fi
 
 VPN_PROVIDER="${OPENVPN_PROVIDER,,}"
@@ -43,7 +55,7 @@ fi
 # Exit out if the provider config directory does not exist
 if [[ ! -d "${VPN_PROVIDER_CONFIGS}" ]]; then
     echo "[OpenVPN] Could not find provider: ${OPENVPN_PROVIDER}. Exiting..." | ts '%Y-%m-%d %H:%M:%S'
-    rm -rf /etc/services.d/openvpn && exit 1
+    exit 1
 fi
 
 # This allows us to use a list similar to PIA list file and try and match it to surfsharks config file. Allows for a somewhat quick transition from PIA to Surfshark
@@ -55,7 +67,7 @@ if [[ "${VPN_PROVIDER}" == "surfshark" ]] && [[ ! -f "${VPN_PROVIDER_CONFIGS}/${
             NAME="${country}_${location}"
             FILE=$(echo "$clustersData" | jq -r "select(.location==\"$location\") | .connectionName")
             if [ ! -z "$FILE" ]; then
-                if [[ "$(echo $NAME | tr '[:upper:]' '[:lower:]')" == "${VPN_CONFIG}" ]] ]]; then
+                if [[ "$(echo $NAME | tr '[:upper:]' '[:lower:]')" == "${VPN_CONFIG}" ]]; then
                     VPN_CONFIG="$(echo "${FILE}" | sed -e 's/\<.ovpn\>//g')_${OPENVPN_PROTOCOL,,}"
 
                     if [[ "${DEBUG}" == "true" ]]; then
@@ -72,6 +84,6 @@ if [[ -f "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn" ]]; then
     VPN_CONFIG="${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn"
 else
     echo "[OpenVPN] supplied config ${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn could not be found. Exiting..." | ts '%Y-%m-%d %H:%M:%S'
-    rm -rf /etc/services.d/openvpn && exit 1
+    exit 1
 fi
 

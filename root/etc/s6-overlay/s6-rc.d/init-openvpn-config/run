@@ -1,0 +1,68 @@
+#!/usr/bin/with-contenv bash
+
+# execute and capture stdout ... output of openvpn-config-validation.sh is not seen ...
+OPENVPN_VALIDATION=$(/etc/scripts/openvpn-config-validation.sh)
+# find out exit status of openvpn-config-validation.sh
+OPENVPN_VALIDATION_EXITED=$?
+
+# If the openvpn-config-validation.sh script did not exit then continue
+if [ $OPENVPN_VALIDATION_EXITED -eq 0 ]; then
+    source /etc/scripts/openvpn-config-validation.sh
+
+    # add OpenVPN user/pass
+    if [[ "${OPENVPN_USERNAME}" == "**None**" ]] || [[ "${OPENVPN_PASSWORD}" == "**None**" ]] ; then
+        echo "[OpenVPN] Found existing credentials..." | ts '%Y-%m-%d %H:%M:%S'
+    else
+        # make auth file from env
+        echo "${OPENVPN_USERNAME}" > "/config/openvpn/${VPN_PROVIDER}-openvpn-credentials.txt"
+        echo "${OPENVPN_PASSWORD}" >> "/config/openvpn/${VPN_PROVIDER}-openvpn-credentials.txt"
+        chmod 600 "/config/openvpn/${VPN_PROVIDER}-openvpn-credentials.txt"
+        chown abc:abc "/config/openvpn/${VPN_PROVIDER}-openvpn-credentials.txt"
+
+        USERNAME_CHAR_CHECK=$(echo "${OPENVPN_USERNAME}" | grep -E -o -m 1 '[^a-zA-Z0-9@]+')
+        if [[ ! -z "${USERNAME_CHAR_CHECK}" ]]; then
+            echo "[OpenVPN] username contains characters which could cause authentication issues, please consider changing this if possible" | ts '%Y-%m-%d %H:%M:%S'
+        fi
+
+        PASSWORD_CHAR_CHECK=$(echo "${OPENVPN_PASSWORD}" | grep -E -o -m 1 '[^a-zA-Z0-9@]+')
+        if [[ ! -z "${PASSWORD_CHAR_CHECK}" ]]; then
+            echo "[OpenVPN] password contains characters which could cause authentication issues, please consider changing this if possible" | ts '%Y-%m-%d %H:%M:%S'
+        fi
+    fi
+
+    # Remove existing ns, docker injects ns from host and isp ns can block/hijack
+    > /etc/resolv.conf
+
+    # Split comma separated string into list from NAME_SERVERS env variable
+    IFS=',' read -ra NAME_SERVER_LIST <<< "${NAME_SERVERS}"
+
+    # Process name servers in the list
+    for NAME_SERVER_ITEM in "${NAME_SERVER_LIST[@]}"; do
+        # strip whitespace from start and end of name_server_item
+        NAME_SERVER_ITEM=$(echo "${NAME_SERVER_ITEM}" | sed -e 's~^[ \t]*~~;s~[ \t]*$~~')
+        echo "[info] Adding ${NAME_SERVER_ITEM} to /etc/resolv.conf" | ts '%Y-%m-%d %H:%M:%S'
+        echo "nameserver ${NAME_SERVER_ITEM}" >> /etc/resolv.conf
+    done
+
+    # If CREATE_TUN_DEVICE is set, create /dev/net/tun
+    if [[ "${CREATE_TUN_DEVICE,,}" == "true" ]]; then
+        mkdir -p /dev/net
+        mknod /dev/net/tun c 10 200
+        chmod 0666 /dev/net/tun
+    fi
+
+    ## If we use LOCAL_NETWORK we need to grab network config info
+    if [[ -n "${LOCAL_NETWORK-}" ]]; then
+        eval $(/sbin/ip route list match 0.0.0.0 | awk '{if($5!="tun0"){print "GW="$3"\nINT="$5; exit}}')
+    fi
+
+    if [[ -n "${LOCAL_NETWORK-}" ]]; then
+        if [[ -n "${GW-}" ]] && [[ -n "${INT-}" ]]; then
+            for LOCAL_NET in ${LOCAL_NETWORK//,/ }; do
+                echo "[info] Adding route to local network ${LOCAL_NET} via ${GW} dev ${INT}" | ts '%Y-%m-%d %H:%M:%S'
+                /sbin/ip route add "${LOCAL_NET}" via "${GW}" dev "${INT}"
+            done
+        fi
+    fi
+fi
+

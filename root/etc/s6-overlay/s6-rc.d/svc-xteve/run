@@ -4,11 +4,7 @@
 UMASK_SET=${UMASK_SET:-022}
 umask "$UMASK_SET"
 
-# if the OpenVPN folder still exists then wait 10 sec before booting xTeVe
-if [[ -d "/etc/services.d/openvpn" ]]; then
-    echo "[xTeVe] Waiting 10s for OpenVPN to boot before starting xTeVe" | ts '%Y-%m-%d %H:%M:%S' && sleep 10;
-    echo "[xTeVe] Public IP: $(curl -s ifconfig.me)" | ts '%Y-%m-%d %H:%M:%S'
-fi
+sleep 10
 
 echo "[xTeVe] Start Script: xteve -port=${XTEVE_PORT} -config=/config -branch=${XTEVE_BRANCH} -debug=${XTEVE_DEBUG}" | ts '%Y-%m-%d %H:%M:%S'
 
