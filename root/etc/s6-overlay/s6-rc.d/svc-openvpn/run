@@ -27,9 +27,6 @@ if [[ "${OPENVPN_ENABLED}" == "true" ]] ; then
         fi
     fi
 
-    echo "[xTeVe] Waiting 10s for OpenVPN to boot before starting xTeVe" | ts '%Y-%m-%d %H:%M:%S'
-    echo "[xTeVe] Public IP: $(curl -s ifconfig.me)" | ts '%Y-%m-%d %H:%M:%S'
-
     /usr/sbin/openvpn \
         --reneg-sec 0 \
         --disable-occ \
@@ -43,6 +40,9 @@ if [[ "${OPENVPN_ENABLED}" == "true" ]] ; then
         --pull-filter ignore 'persist-tun' \
         --pull-filter ignore 'block-outside-dns' \
         ${OPENVPN_OPTIONS} --config "${VPN_CONFIG}"
+else
+    sleep infinite
 fi
+
 
 

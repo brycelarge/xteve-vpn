@@ -1,0 +1,14 @@
+#!/usr/bin/with-contenv bash
+
+OPENVPN_ENABLED=$(sqlite3 /etc/openvpn/sqlite3/config.db "SELECT value FROM openvpn WHERE name='enabled'")
+if [[ "${OPENVPN_ENABLED}" == "true" ]] ; then
+    echo "[Privoxy] OpenVPN is enabled, setting up Privoxy config" | ts '%Y-%m-%d %H:%M:%S'
+    CONFIG=/etc/privoxy/config
+
+    # Set the port for the IPv4 interface
+    adr=$(ip -4  a show eth0| grep -oP "(?<=inet )([^/]+)")
+    sed -i -E "s/^listen-address\s+127.*/listen-address ${adr:-"0.0.0.0"}:8181/" "${CONFIG}"
+
+    # Remove IPv6 I dont know enough about IPv6 to attempt this
+    sed -i -E "s/^listen-address\s+\[\:\:1.*//" "${CONFIG}"
+fi

@@ -2,12 +2,17 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy
 
 ARG DEBIAN_FRONTEND="noninteractive"
 
+# Add needed nvidia environment variables for https://github.com/NVIDIA/nvidia-docker
+ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility"
+
 RUN \
     echo "**** install runtime ****" && \
+    curl -s https://repo.jellyfin.org/ubuntu/jellyfin_team.gpg.key | apt-key add - && \
+    echo 'deb [arch=amd64] https://repo.jellyfin.org/ubuntu jammy main' > /etc/apt/sources.list.d/jellyfin.list && \
     apt-get update && \
-    apt-get install -y \
+    apt-get install -y --no-install-recommends \
     vlc \
-    ffmpeg \
+    jellyfin-ffmpeg5 \
     tzdata \
     unzip \
     jq \
@@ -20,6 +25,7 @@ RUN \
     gnupg2 \
     net-tools \
     sqlite3 \
+    privoxy \
     bc && \
     echo "**** install speedtest cli ****" && \
     curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | bash && \
@@ -48,6 +54,7 @@ ENV \
     OPENVPN_PASSWORD='**None**' \
     CREATE_TUN_DEVICE=true \
     OPENVPN_OPTIONS='' \
+    PRIVOXY_ENABLED=true \
     OPENVPN_PROTOCOL='udp'
 
 # Timezone (TZ):  Add the tzdata package and configure for EST timezone.
@@ -67,3 +74,5 @@ VOLUME /config /tmp/xteve
 
 # Set default container port
 EXPOSE 34400
+# Privoxy
+EXPOSE 8118
