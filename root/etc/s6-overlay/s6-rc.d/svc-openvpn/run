@@ -1,9 +1,9 @@
 #!/usr/bin/with-contenv bash
 
-OPENVPN_ENABLED=$(sqlite3 /etc/openvpn/config.db "SELECT value FROM openvpn WHERE name='enabled'")
+OPENVPN_ENABLED=$(sqlite3 /etc/openvpn/sqlite3/config.db "SELECT value FROM openvpn WHERE name='enabled'")
 
 # If the openvpn-config-validation.sh script did not exit then continue
-if [[ "${OPENVPN_ENABLED}" == "true" ]] ]] ; then
+if [[ "${OPENVPN_ENABLED}" == "true" ]] ; then
     VPN_CONFIG=$(sqlite3 /etc/openvpn/config.db "SELECT value FROM openvpn WHERE name='config'")
 
     # Needed for the variables defined

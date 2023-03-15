@@ -2,21 +2,21 @@
 
 if [[ "${OPENVPN_PROVIDER}" == "**None**" ]] || [[ -z "${OPENVPN_PROVIDER-}" ]]; then
     echo "[OpenVPN] Provider not set. Exiting..." | ts '%Y-%m-%d %H:%M:%S'
-    sqlite3 "$DB" "INSERT OR REPLACE INTO openvpn(name, value) VALUES ((select ID from openvpn where name = 'enabled'), 'enabled', 'false');"
+    sqlite3 /etc/openvpn/sqlite3/config.db "UPDATE openvpn SET value='false' WHERE name='enabled';"
     exit 1
 fi
 
 # if network interface docker0 is present then we are running in host mode and thus must exit
 if [[ ! -z "$(ifconfig | grep docker0 || true)" ]]; then
     echo "[OpenVPN] docker network type detected as 'Host', this will cause major issues, please stop the container and switch back to 'Bridge'. Exiting..." | ts '%Y-%m-%d %H:%M:%S'
-    sqlite3 "$DB" "INSERT OR REPLACE INTO openvpn(name, value) VALUES ((select ID from openvpn where name = 'enabled'), 'enabled', 'false');"
+    sqlite3 /etc/openvpn/sqlite3/config.db "UPDATE openvpn SET value='false' WHERE name='enabled';"
     exit 1
 fi
 
 if [[ "${OPENVPN_USERNAME}" == "**None**" ]] || [[ "${OPENVPN_PASSWORD}" == "**None**" ]] ; then
     if [[ ! -f "/config/openvpn/${VPN_PROVIDER}-openvpn-credentials.txt" ]] ; then
         echo "[OpenVPN] credentials not set. Exiting." | ts '%Y-%m-%d %H:%M:%S'
-        sqlite3 "$DB" "INSERT OR REPLACE INTO openvpn(name, value) VALUES ((select ID from openvpn where name = 'enabled'), 'enabled', 'false');"
+        sqlite3 /etc/openvpn/sqlite3/config.db "UPDATE openvpn SET value='false' WHERE name='enabled';"
         exit 1
     fi
 fi
@@ -58,24 +58,24 @@ fi
 # Exit out if the provider config directory does not exist
 if [[ ! -d "${VPN_PROVIDER_CONFIGS}" ]]; then
     echo "[OpenVPN] Could not find provider: ${OPENVPN_PROVIDER}. Exiting..." | ts '%Y-%m-%d %H:%M:%S'
-    sqlite3 "$DB" "INSERT OR REPLACE INTO openvpn(name, value) VALUES ((select ID from openvpn where name = 'enabled'), 'enabled', 'false');"
+    sqlite3 /etc/openvpn/sqlite3/config.db "UPDATE openvpn SET value='false' WHERE name='enabled';"
     exit 1
 fi
 
 # This allows us to use a list similar to PIA list file and try and match it to surfsharks config file. Allows for a somewhat quick transition from PIA to Surfshark
 if [[ "${VPN_PROVIDER}" == "surfshark" ]] && [[ ! -f "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn" ]]; then
-    VPN_CONFIG=$(sqlite3 "$DB" "SELECT value FROM surfshark_configs WHERE name='${VPN_CONFIG}'")
+    VPN_CONFIG=$(sqlite3 /etc/openvpn/sqlite3/config.db "SELECT value FROM surfshark_configs WHERE name='${VPN_CONFIG}'")
 fi
 
 if [[ -f "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn" ]]; then
     echo "[OpenVPN] config file ${VPN_CONFIG}.ovpn found" | ts '%Y-%m-%d %H:%M:%S'
     VPN_CONFIG="${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn"
-    sqlite3 "$DB" "INSERT OR REPLACE INTO openvpn(name, value) VALUES ((select ID from openvpn where name = 'enabled'), 'enabled', 'true');"
-    sqlite3 "$DB" "INSERT OR REPLACE INTO openvpn(name, value) VALUES ((select ID from openvpn where name = 'config'), 'config', '${VPN_CONFIG}');"
+    sqlite3 /etc/openvpn/sqlite3/config.db "UPDATE openvpn SET value='true' WHERE name='enabled';"
+    sqlite3 /etc/openvpn/sqlite3/config.db "UPDATE openvpn SET value='${VPN_CONFIG}' WHERE name='config';"
 else
     echo "[OpenVPN] supplied config ${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn could not be found. Exiting..." | ts '%Y-%m-%d %H:%M:%S'
-    sqlite3 "$DB" "INSERT OR REPLACE INTO openvpn(name, value) VALUES ((select ID from openvpn where name = 'enabled'), 'enabled', 'false');"
-    sqlite3 "$DB" "INSERT OR REPLACE INTO openvpn(name, value) VALUES ((select ID from openvpn where name = 'config'), 'config', '');"
+    sqlite3 /etc/openvpn/sqlite3/config.db "UPDATE openvpn SET value='false' WHERE name='enabled';"
+    sqlite3 /etc/openvpn/sqlite3/config.db "UPDATE openvpn SET value='' WHERE name='config';"
     exit 1
 fi
 
