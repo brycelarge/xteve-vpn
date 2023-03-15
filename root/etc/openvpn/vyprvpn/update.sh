@@ -2,8 +2,6 @@
 
 echo "**** Grab VyprVPN config files ****"
 
-mkdir -p /etc/openvpn/vyprvpn
-
 curl -o /tmp/vyprvpn.zip -L "https://support.vyprvpn.com/hc/article_attachments/360052617332/Vypr_OpenVPN_20200320.zip" && \
     unzip /tmp/vyprvpn.zip -d /etc/openvpn/vyprvpn/ && \
     mv /etc/openvpn/vyprvpn/GF_OpenVPN_20200320/OpenVPN160/*.ovpn  /etc/openvpn/vyprvpn/ && \

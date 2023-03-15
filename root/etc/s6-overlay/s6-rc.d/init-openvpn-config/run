@@ -7,8 +7,6 @@ OPENVPN_VALIDATION_EXITED=$?
 
 # If the openvpn-config-validation.sh script did not exit then continue
 if [ $OPENVPN_VALIDATION_EXITED -eq 0 ]; then
-    source /etc/scripts/openvpn-config-validation.sh
-
     # add OpenVPN user/pass
     if [[ "${OPENVPN_USERNAME}" == "**None**" ]] || [[ "${OPENVPN_PASSWORD}" == "**None**" ]] ; then
         echo "[OpenVPN] Found existing credentials..." | ts '%Y-%m-%d %H:%M:%S'
@@ -64,5 +62,7 @@ if [ $OPENVPN_VALIDATION_EXITED -eq 0 ]; then
             done
         fi
     fi
+else
+    echo $OPENVPN_VALIDATION
 fi
 

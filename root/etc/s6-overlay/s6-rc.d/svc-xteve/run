@@ -4,7 +4,11 @@
 UMASK_SET=${UMASK_SET:-022}
 umask "$UMASK_SET"
 
-sleep 10
+OPENVPN_ENABLED=$(sqlite3 /etc/openvpn/config.db "SELECT value FROM openvpn WHERE name='enabled'")
+if [[ "${OPENVPN_ENABLED}" == "true" ]] ]] ; then
+    echo "[OpenVPN] is enabled and starting, sleeping for 10s before starting xTeVe" | ts '%Y-%m-%d %H:%M:%S'
+    sleep 10
+fi
 
 echo "[xTeVe] Start Script: xteve -port=${XTEVE_PORT} -config=/config -branch=${XTEVE_BRANCH} -debug=${XTEVE_DEBUG}" | ts '%Y-%m-%d %H:%M:%S'
 

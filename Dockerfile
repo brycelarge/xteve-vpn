@@ -19,6 +19,7 @@ RUN \
     lsb-release \
     gnupg2 \
     net-tools \
+    sqlite3 \
     bc && \
     echo "**** install speedtest cli ****" && \
     curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | bash && \
@@ -56,7 +57,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # add local files
 COPY root/ /
 
-RUN /etc/openvpn/pia/update.sh && /etc/openvpn/surfshark/update.sh && /etc/openvpn/vyprvpn/update.sh
+RUN /etc/openvpn/sqlite3/setup.sh && /etc/openvpn/pia/update.sh && /etc/openvpn/surfshark/update.sh && /etc/openvpn/vyprvpn/update.sh
 
 # setup a health check to monitor OpenVPN
 HEALTHCHECK --interval=5m CMD /etc/scripts/health-check.sh

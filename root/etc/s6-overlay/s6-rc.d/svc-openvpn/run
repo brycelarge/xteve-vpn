@@ -1,12 +1,11 @@
 #!/usr/bin/with-contenv bash
 
-# execute and capture stdout ... output of openvpn-config-validation.sh is not seen ...
-OPENVPN_VALIDATION=$(/etc/scripts/openvpn-config-validation.sh)
-# find out exit status of openvpn-config-validation.sh
-OPENVPN_VALIDATION_EXITED=$?
+OPENVPN_ENABLED=$(sqlite3 /etc/openvpn/config.db "SELECT value FROM openvpn WHERE name='enabled'")
 
 # If the openvpn-config-validation.sh script did not exit then continue
-if [ $OPENVPN_VALIDATION_EXITED -eq 0 ]; then
+if [[ "${OPENVPN_ENABLED}" == "true" ]] ]] ; then
+    VPN_CONFIG=$(sqlite3 /etc/openvpn/config.db "SELECT value FROM openvpn WHERE name='config'")
+
     # Needed for the variables defined
     source /etc/scripts/openvpn-config-validation.sh
 
@@ -44,8 +43,6 @@ if [ $OPENVPN_VALIDATION_EXITED -eq 0 ]; then
         --pull-filter ignore 'persist-tun' \
         --pull-filter ignore 'block-outside-dns' \
         ${OPENVPN_OPTIONS} --config "${VPN_CONFIG}"
-else
-    echo $OPENVPN_VALIDATION
 fi
 
 

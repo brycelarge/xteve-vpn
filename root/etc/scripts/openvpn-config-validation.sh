@@ -2,18 +2,21 @@
 
 if [[ "${OPENVPN_PROVIDER}" == "**None**" ]] || [[ -z "${OPENVPN_PROVIDER-}" ]]; then
     echo "[OpenVPN] Provider not set. Exiting..." | ts '%Y-%m-%d %H:%M:%S'
+    sqlite3 "$DB" "INSERT OR REPLACE INTO openvpn(name, value) VALUES ((select ID from openvpn where name = 'enabled'), 'enabled', 'false');"
     exit 1
 fi
 
 # if network interface docker0 is present then we are running in host mode and thus must exit
 if [[ ! -z "$(ifconfig | grep docker0 || true)" ]]; then
     echo "[OpenVPN] docker network type detected as 'Host', this will cause major issues, please stop the container and switch back to 'Bridge'. Exiting..." | ts '%Y-%m-%d %H:%M:%S'
+    sqlite3 "$DB" "INSERT OR REPLACE INTO openvpn(name, value) VALUES ((select ID from openvpn where name = 'enabled'), 'enabled', 'false');"
     exit 1
 fi
 
 if [[ "${OPENVPN_USERNAME}" == "**None**" ]] || [[ "${OPENVPN_PASSWORD}" == "**None**" ]] ; then
     if [[ ! -f "/config/openvpn/${VPN_PROVIDER}-openvpn-credentials.txt" ]] ; then
         echo "[OpenVPN] credentials not set. Exiting." | ts '%Y-%m-%d %H:%M:%S'
+        sqlite3 "$DB" "INSERT OR REPLACE INTO openvpn(name, value) VALUES ((select ID from openvpn where name = 'enabled'), 'enabled', 'false');"
         exit 1
     fi
 fi
@@ -55,35 +58,24 @@ fi
 # Exit out if the provider config directory does not exist
 if [[ ! -d "${VPN_PROVIDER_CONFIGS}" ]]; then
     echo "[OpenVPN] Could not find provider: ${OPENVPN_PROVIDER}. Exiting..." | ts '%Y-%m-%d %H:%M:%S'
+    sqlite3 "$DB" "INSERT OR REPLACE INTO openvpn(name, value) VALUES ((select ID from openvpn where name = 'enabled'), 'enabled', 'false');"
     exit 1
 fi
 
 # This allows us to use a list similar to PIA list file and try and match it to surfsharks config file. Allows for a somewhat quick transition from PIA to Surfshark
 if [[ "${VPN_PROVIDER}" == "surfshark" ]] && [[ ! -f "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn" ]]; then
-    clustersData="$(curl -s "https://my.surfshark.com/vpn/api/v1/server/clusters" | jq -r .[])"
-    for country in $(echo "$clustersData" | jq -r '.countryCode'); do
-        locations=$(echo "$clustersData" | jq -r "select(.countryCode==\"$country\") | .location")
-        for location in $(echo $locations); do
-            NAME="${country}_${location}"
-            FILE=$(echo "$clustersData" | jq -r "select(.location==\"$location\") | .connectionName")
-            if [ ! -z "$FILE" ]; then
-                if [[ "$(echo $NAME | tr '[:upper:]' '[:lower:]')" == "${VPN_CONFIG}" ]]; then
-                    VPN_CONFIG="$(echo "${FILE}" | sed -e 's/\<.ovpn\>//g')_${OPENVPN_PROTOCOL,,}"
-
-                    if [[ "${DEBUG}" == "true" ]]; then
-                        echo "[OpenVPN] ${VPN_CONFIG} found using the surfshark API" | ts '%Y-%m-%d %H:%M:%S'
-                    fi
-                fi
-            fi
-        done
-    done
+    VPN_CONFIG=$(sqlite3 "$DB" "SELECT value FROM surfshark_configs WHERE name='${VPN_CONFIG}'")
 fi
 
 if [[ -f "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn" ]]; then
     echo "[OpenVPN] config file ${VPN_CONFIG}.ovpn found" | ts '%Y-%m-%d %H:%M:%S'
     VPN_CONFIG="${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn"
+    sqlite3 "$DB" "INSERT OR REPLACE INTO openvpn(name, value) VALUES ((select ID from openvpn where name = 'enabled'), 'enabled', 'true');"
+    sqlite3 "$DB" "INSERT OR REPLACE INTO openvpn(name, value) VALUES ((select ID from openvpn where name = 'config'), 'config', '${VPN_CONFIG}');"
 else
     echo "[OpenVPN] supplied config ${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn could not be found. Exiting..." | ts '%Y-%m-%d %H:%M:%S'
+    sqlite3 "$DB" "INSERT OR REPLACE INTO openvpn(name, value) VALUES ((select ID from openvpn where name = 'enabled'), 'enabled', 'false');"
+    sqlite3 "$DB" "INSERT OR REPLACE INTO openvpn(name, value) VALUES ((select ID from openvpn where name = 'config'), 'config', '');"
     exit 1
 fi
 
