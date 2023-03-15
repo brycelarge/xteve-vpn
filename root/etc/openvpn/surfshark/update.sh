@@ -16,6 +16,7 @@ for CONFIG_FILE in /etc/openvpn/surfshark/*.ovpn; do
     sed -i "s/auth-user-pass.*/auth-user-pass \/config\/openvpn\/surfshark-openvpn-credentials.txt/g" "${CONFIG_FILE}"
 done
 
+echo "Compiling name from surfshark config to make it easier to cross reference with PAI"
 clustersData="$(curl -s "https://my.surfshark.com/vpn/api/v1/server/clusters" | jq -r .[])"
 for country in $(echo "$clustersData" | jq -r '.countryCode'); do
     locations=$(echo "$clustersData" | jq -r "select(.countryCode==\"$country\") | .location")
@@ -23,7 +24,7 @@ for country in $(echo "$clustersData" | jq -r '.countryCode'); do
         NAME=$(echo "${country}_${location}" | tr '[:upper:]' '[:lower:]')
         FILE=$(echo "$clustersData" | jq -r "select(.location==\"$location\") | .connectionName")
         if [ ! -z "$FILE" ]; then
-            sqlite3 "$DB" "INSERT INTO surfshark_configs(name, value) VALUES ('${NAME}', '${FILE}');"
+            sqlite3 /etc/openvpn/sqlite3/config.db "INSERT INTO surfshark_configs(name, value) VALUES ('${NAME}', '${FILE}');"
         fi
     done
 done
