@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bash
 
 OPENVPN_ENABLED=$(sqlite3 /etc/openvpn/sqlite3/config.db "SELECT value FROM openvpn WHERE name='enabled'")
-if [[ "${OPENVPN_ENABLED}" == "true" ]] ; then
+if [[ "${OPENVPN_ENABLED}" == "true" && ${PRIVOXY_ENABLED} == "true" ]] ; then
     echo "[Privoxy] OpenVPN is enabled, setting up Privoxy config" | ts '%Y-%m-%d %H:%M:%S'
     CONFIG=/etc/privoxy/config
 

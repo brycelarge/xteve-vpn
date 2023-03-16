@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "**** Grab PIA config files ****"
+echo "[OpenVPN PIA] grab config files" | ts '%Y-%m-%d %H:%M:%S'
 
 set -e
 
@@ -30,15 +30,16 @@ for (( i=1; i<${NUMBER_OF_CONFIG_TYPES}+1; i++ )); do
     fi
 
     # Cleanup and setup the surfshark config files
+    echo '' > "/config/openvpn/pia/list.txt"
     for CONFIG_FILE in *.ovpn; do
-        echo "Cleaning ${CONFIG_FILE}"
-        echo "$(basename -- "${CONFIG_FILE}")" >> "/etc/openvpn/pia/list.txt"
+        echo "[OpenVPN PIA] cleaning ${CONFIG_FILE}" | ts '%Y-%m-%d %H:%M:%S'
+        echo "$(basename -- "${CONFIG_FILE}")" >> "/config/openvpn/pia/list.txt"
 
         /etc/scripts/openvpn-config-clean.sh "${CONFIG_FILE}"
 
         sed -i "s/auth-user-pass.*/auth-user-pass \/config\/openvpn\/pia-openvpn-credentials.txt/g" "${CONFIG_FILE}"
-        sed -i "s/ca ca\.rsa\.\([0-9]*\)\.crt/ca \/etc\/openvpn\/pia\/${FOLDER_WITH_ESCAPED_SLASH}ca\.rsa\.\1\.crt/" "${CONFIG_FILE}"
-        sed -i "s/crl-verify crl\.rsa\.\([0-9]*\)\.pem/crl-verify \/etc\/openvpn\/pia\/${FOLDER_WITH_ESCAPED_SLASH}crl\.rsa\.\1\.pem/" "${CONFIG_FILE}"
+        sed -i "s/ca ca\.rsa\.\([0-9]*\)\.crt/ca \/config\/openvpn\/pia\/${FOLDER_WITH_ESCAPED_SLASH}ca\.rsa\.\1\.crt/" "${CONFIG_FILE}"
+        sed -i "s/crl-verify crl\.rsa\.\([0-9]*\)\.pem/crl-verify \/config\/openvpn\/pia\/${FOLDER_WITH_ESCAPED_SLASH}crl\.rsa\.\1\.pem/" "${CONFIG_FILE}"
     done
 
     if [[ ! -z "${CONFIG_FOLDERS[$i-1]}" ]] ; then

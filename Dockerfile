@@ -61,10 +61,13 @@ ENV \
 # This will override the default container time in UTC.
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+# move ffmpeg to a standard location for users on an old unraid template
+RUN ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg usr/bin/ffmpeg
+
 # add local files
 COPY root/ /
 
-RUN /etc/openvpn/sqlite3/setup.sh && /etc/openvpn/pia/update.sh && /etc/openvpn/surfshark/update.sh && /etc/openvpn/vyprvpn/update.sh
+RUN /etc/openvpn/sqlite3/setup.sh && /etc/openvpn/surfshark/map.sh
 
 # setup a health check to monitor OpenVPN
 HEALTHCHECK --interval=5m CMD /etc/scripts/health-check.sh
