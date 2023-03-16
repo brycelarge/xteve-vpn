@@ -44,19 +44,6 @@ if [[ "${VPN_PROVIDER}" == "custom" ]]; then
         sed -i "s/auth-user-pass.*/auth-user-pass \/config\/openvpn\/custom-openvpn-credentials.txt/g" "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn"
     fi
 else
-    # /config/openvpn/${VPN_PROVIDER} folder exists then dont update else update
-    if [[ ! -d "/config/openvpn/${VPN_PROVIDER}" && -d "/etc/openvpn/${VPN_PROVIDER}" ]]; then
-        ./etc/openvpn/${VPN_PROVIDER}/update.sh
-    elif [[ -d "/config/openvpn/${VPN_PROVIDER}" && ! -d "/etc/openvpn/${VPN_PROVIDER}" ]]; then
-        # clean the config files
-        echo '' > "/config/openvpn/${VPN_PROVIDER}/list.txt"
-        for CONFIG_FILE in "/config/openvpn/${VPN_PROVIDER}/*.ovpn"; do
-            echo "[OpenVPN] cleaning ${CONFIG_FILE}" | ts '%Y-%m-%d %H:%M:%S'
-            echo "$(basename -- "${CONFIG_FILE}")" >> "/config/openvpn/${VPN_PROVIDER}/list.txt"
-            /etc/scripts/openvpn-config-clean.sh "${CONFIG_FILE}"
-        done
-    fi
-
     # Set the pia config file to tcp directory if the protocol is tcp
     if [[ "${VPN_PROVIDER}" == "pia" && "${OPENVPN_PROTOCOL,,}" == "tcp" ]]; then
         VPN_PROVIDER_CONFIGS="/config/openvpn/${VPN_PROVIDER}/tcp"
@@ -71,7 +58,7 @@ fi
 
 # Exit out if the provider config directory does not exist
 if [[ ! -d "${VPN_PROVIDER_CONFIGS}" ]]; then
-    echo "[OpenVPN] Could not find provider: ${OPENVPN_PROVIDER}. Exiting..." | ts '%Y-%m-%d %H:%M:%S'
+    echo "[OpenVPN] Could not find provider: ${OPENVPN_PROVIDER} config file ${VPN_PROVIDER_CONFIGS}. Exiting..." | ts '%Y-%m-%d %H:%M:%S'
     sqlite3 /etc/openvpn/sqlite3/config.db "UPDATE openvpn SET value='false' WHERE name='enabled';"
     exit 1
 fi

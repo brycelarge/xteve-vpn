@@ -12,6 +12,9 @@ sed -i "s/^proto\stcp$/proto tcp-client/g" "${1}"
 # remove persist-tun from ovpn file if present, this allows reconnection to tunnel on disconnect
 #sed -i '/^persist-tun/d' "${1}"
 
+# remove cipher set from ovpn file if present, DEPRECATED OPTION: --cipher set use data-ciphers
+sed -i 's/cipher/data-ciphers/' "${1}"
+
 # remove reneg-sec from ovpn file if present, this is removed to prevent re-checks and dropouts
 sed -i '/^reneg-sec.*/d' "${1}"
 

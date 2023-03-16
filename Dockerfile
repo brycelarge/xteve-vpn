@@ -67,7 +67,7 @@ RUN ln -s /usr/lib/jellyfin-ffmpeg/ffmpeg usr/bin/ffmpeg
 # add local files
 COPY root/ /
 
-RUN /etc/openvpn/sqlite3/setup.sh && /etc/openvpn/surfshark/map.sh
+RUN chmod -R +x /etc/openvpn && /etc/openvpn/sqlite3/setup.sh && /etc/openvpn/surfshark/map.sh
 
 # setup a health check to monitor OpenVPN
 HEALTHCHECK --interval=5m CMD /etc/scripts/health-check.sh

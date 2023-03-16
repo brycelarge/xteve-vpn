@@ -10,6 +10,4 @@ if [[ "${OPENVPN_ENABLED}" == "true" && ${PRIVOXY_ENABLED} == "true" ]] ; then
         --pidfile /var/run/privoxy.pid \
         --no-daemon \
         /etc/privoxy/config
-else
-    sleep infinite
 fi

@@ -11,7 +11,7 @@ if [[ "${OPENVPN_ENABLED}" == "true" ]] ; then
 
     echo "[OpenVPN] using provider: ${OPENVPN_PROVIDER}" | ts '%Y-%m-%d %H:%M:%S'
 
-    echo "[OpenVPN] Start Script: /usr/sbin/openvpn --reneg-sec 0 --disable-occ --auth-nocache --mute-replay-warnings --pull-filter ignore 'ping' --pull-filter ignore 'ping-restart' --pull-filter ignore 'route-ipv6' --pull-filter ignore 'ifconfig-ipv6 --pull-filter ignore 'tun-ipv6' --pull-filter ignore 'dhcp-option DNS6' --pull-filter ignore 'reneg-sec' --pull-filter ignore 'persist-tun' --pull-filter ignore 'block-outside-dns' ${OPENVPN_OPTIONS} --config ${VPN_CONFIG}" | ts '%Y-%m-%d %H:%M:%S'
+    echo "[OpenVPN] Start Script: /usr/sbin/openvpn --reneg-sec 0 --disable-occ --auth-nocache --mute-replay-warnings --data-ciphers-fallback AES-128-GCM --pull-filter ignore 'ping' --pull-filter ignore 'ping-restart' --pull-filter ignore 'route-ipv6' --pull-filter ignore 'ifconfig-ipv6 --pull-filter ignore 'tun-ipv6' --pull-filter ignore 'dhcp-option DNS6' --pull-filter ignore 'reneg-sec' --pull-filter ignore 'persist-tun' --pull-filter ignore 'block-outside-dns' ${OPENVPN_OPTIONS} --config ${VPN_CONFIG}" | ts '%Y-%m-%d %H:%M:%S'
 
     if [[ "${DEBUG}" == "true" ]]; then
         echo "[OpenVPN] Contents of ovpn file ${VPN_CONFIG} as follows..." | ts '%Y-%m-%d %H:%M:%S'; cat "${VPN_CONFIG}"
@@ -32,6 +32,7 @@ if [[ "${OPENVPN_ENABLED}" == "true" ]] ; then
         --disable-occ \
         --auth-nocache \
         --mute-replay-warnings \
+        --data-ciphers-fallback AES-128-GCM \
         --pull-filter ignore 'route-ipv6' \
         --pull-filter ignore 'ifconfig-ipv6' \
         --pull-filter ignore 'tun-ipv6' \
@@ -40,8 +41,6 @@ if [[ "${OPENVPN_ENABLED}" == "true" ]] ; then
         --pull-filter ignore 'persist-tun' \
         --pull-filter ignore 'block-outside-dns' \
         ${OPENVPN_OPTIONS} --config "${VPN_CONFIG}"
-else
-    sleep infinite
 fi
 
 

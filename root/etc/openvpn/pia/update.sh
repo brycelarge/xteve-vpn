@@ -2,8 +2,6 @@
 
 echo "[OpenVPN PIA] grab config files" | ts '%Y-%m-%d %H:%M:%S'
 
-set -e
-
 # If the script is called from elsewhere
 cd "${0%/*}"
 
@@ -30,10 +28,10 @@ for (( i=1; i<${NUMBER_OF_CONFIG_TYPES}+1; i++ )); do
     fi
 
     # Cleanup and setup the surfshark config files
-    echo '' > "/config/openvpn/pia/list.txt"
+    echo '' > list.txt
     for CONFIG_FILE in *.ovpn; do
         echo "[OpenVPN PIA] cleaning ${CONFIG_FILE}" | ts '%Y-%m-%d %H:%M:%S'
-        echo "$(basename -- "${CONFIG_FILE}")" >> "/config/openvpn/pia/list.txt"
+        echo "$(basename -- "${CONFIG_FILE}")" >> list.txt
 
         /etc/scripts/openvpn-config-clean.sh "${CONFIG_FILE}"
 

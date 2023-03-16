@@ -1,5 +1,29 @@
 #!/usr/bin/with-contenv bash
 
+mkdir -p /config/openvpn
+lsiown abc:abc /config/openvpn
+
+echo "[OpenVPN] fetching ${VPN_PROVIDER} config files" | ts '%Y-%m-%d %H:%M:%S'
+if [[ "${OPENVPN_PROVIDER}" != "**None**" && "${OPENVPN_PROVIDER,,}" != "custom" ]]; then
+    VPN_PROVIDER="${OPENVPN_PROVIDER,,}"
+
+    # fetch providers config files or deal with users config files
+    if [[ ! -d "/config/openvpn/${VPN_PROVIDER}" && -d "/etc/openvpn/${VPN_PROVIDER}" ]]; then
+        echo "[OpenVPN] fetching ${VPN_PROVIDER} config files" | ts '%Y-%m-%d %H:%M:%S'
+        bash /etc/openvpn/${VPN_PROVIDER}/update.sh
+        mv "/etc/openvpn/${VPN_PROVIDER}" "/config/openvpn/"
+        lsiown -R abc:abc "/config/openvpn/${VPN_PROVIDER}"
+    elif [[ -d "/config/openvpn/${VPN_PROVIDER}" && ! -d "/etc/openvpn/${VPN_PROVIDER}" ]]; then
+        # clean the config files
+        echo '' > "/config/openvpn/${VPN_PROVIDER}/list.txt"
+        for CONFIG_FILE in "/config/openvpn/${VPN_PROVIDER}/*.ovpn"; do
+            echo "[OpenVPN] cleaning ${CONFIG_FILE}" | ts '%Y-%m-%d %H:%M:%S'
+            echo "$(basename -- "${CONFIG_FILE}")" >> "/config/openvpn/${VPN_PROVIDER}/list.txt"
+            /etc/scripts/openvpn-config-clean.sh "${CONFIG_FILE}"
+        done
+    fi
+fi
+
 # execute and capture stdout ... output of openvpn-config-validation.sh is not seen ...
 OPENVPN_VALIDATION=$(/etc/scripts/openvpn-config-validation.sh)
 # find out exit status of openvpn-config-validation.sh

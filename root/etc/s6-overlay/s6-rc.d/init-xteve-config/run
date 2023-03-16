@@ -2,7 +2,7 @@
 
 # create directories
 mkdir -p \
-    /config/{cache,conf,backup,cron,openvpn} \
+    /config/{cache,conf,backup,cron} \
     /tmp/{xteve}
 
 # permissions
