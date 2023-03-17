@@ -2,9 +2,6 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:jammy
 
 ARG DEBIAN_FRONTEND="noninteractive"
 
-# Add needed nvidia environment variables for https://github.com/NVIDIA/nvidia-docker
-ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility"
-
 RUN \
     echo "**** install runtime ****" && \
     curl -s https://repo.jellyfin.org/ubuntu/jellyfin_team.gpg.key | apt-key add - && \
