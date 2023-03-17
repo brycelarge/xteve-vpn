@@ -4,8 +4,11 @@
 UMASK_SET=${UMASK_SET:-022}
 umask "$UMASK_SET"
 
-echo "[xTeVe] Waiting 11s for OpenVPN to boot before starting xTeVe" | ts '%Y-%m-%d %H:%M:%S'
-sleep 16
+OPENVPN_ENABLED=$(sqlite3 /etc/openvpn/sqlite3/config.db "SELECT value FROM openvpn WHERE name='enabled'")
+if [[ "${OPENVPN_ENABLED}" == "true" && ${PRIVOXY_ENABLED} == "true" ]] ; then
+    echo "[xTeVe] Waiting 11s for OpenVPN to boot before starting xTeVe" | ts '%Y-%m-%d %H:%M:%S'
+    sleep 11
+fi
 
 echo "[xTeVe] Public IP: $(curl -s ifconfig.me)" | ts '%Y-%m-%d %H:%M:%S'
 echo "[xTeVe] Start Script: xteve -port=${XTEVE_PORT} -config=/config -branch=${XTEVE_BRANCH} -debug=${XTEVE_DEBUG}" | ts '%Y-%m-%d %H:%M:%S'

@@ -3,7 +3,7 @@
 # create directories
 mkdir -p \
     /config/{cache,conf,backup,cron} \
-    /tmp/{xteve}
+    /tmp/xteve
 
 # permissions
 lsiown -R abc:abc \

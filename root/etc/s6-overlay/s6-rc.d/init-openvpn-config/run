@@ -3,8 +3,8 @@
 mkdir -p /config/openvpn
 lsiown abc:abc /config/openvpn
 
-echo "[OpenVPN] fetching ${VPN_PROVIDER} config files" | ts '%Y-%m-%d %H:%M:%S'
 if [[ "${OPENVPN_PROVIDER}" != "**None**" && "${OPENVPN_PROVIDER,,}" != "custom" ]]; then
+    echo "[OpenVPN] fetching ${VPN_PROVIDER} config files" | ts '%Y-%m-%d %H:%M:%S'
     VPN_PROVIDER="${OPENVPN_PROVIDER,,}"
 
     # fetch providers config files or deal with users config files
@@ -66,8 +66,8 @@ if [ $OPENVPN_VALIDATION_EXITED -eq 0 ]; then
         echo "nameserver ${NAME_SERVER_ITEM}" >> /etc/resolv.conf
     done
 
-    # If CREATE_TUN_DEVICE is set, create /dev/net/tun
-    if [[ "${CREATE_TUN_DEVICE,,}" == "true" ]]; then
+    # create tun device
+    if [[ ! -c /dev/net/tun ]]; then
         mkdir -p /dev/net
         mknod /dev/net/tun c 10 200
         chmod 0666 /dev/net/tun

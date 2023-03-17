@@ -1,10 +1,10 @@
 #!/usr/bin/with-contenv bash
 
-echo "[Privoxy] Waiting 10s for OpenVPN to boot before starting" | ts '%Y-%m-%d %H:%M:%S'
-sleep 10
-
 OPENVPN_ENABLED=$(sqlite3 /etc/openvpn/sqlite3/config.db "SELECT value FROM openvpn WHERE name='enabled'")
 if [[ "${OPENVPN_ENABLED}" == "true" && ${PRIVOXY_ENABLED} == "true" ]] ; then
+    echo "[Privoxy] Waiting 10s for OpenVPN to boot before starting" | ts '%Y-%m-%d %H:%M:%S'
+    sleep 10
+
     echo "[Privoxy] staring on port 8181" | ts '%Y-%m-%d %H:%M:%S'
     /usr/sbin/privoxy \
         --pidfile /var/run/privoxy.pid \
