@@ -20,8 +20,8 @@ Here are some example snippets to help you get started creating a container.
 
 ```
 docker create \
-  --name=xteve \
-  --net=host \
+  --name=xteve-vpn \
+  --net=bridge \
   -e PUID=1000 \
   -e PGID=1000 \
   -e UMASK_SET=022 `#optional` \
@@ -38,22 +38,18 @@ docker create \
 
 Container images are configured using parameters passed at runtime (such as those above). These parameters are separated by a colon and indicate `<external>:<internal>` respectively. For example, `-p 8080:80` would expose port `80` from inside the container to be accessible from the host's IP on port `8080` outside the container.
 
-| Parameter | Function |
-| :----: | --- |
-| `--net=host` | Use Host Networking |
-| `-p 34400:34400` | Port needs to be passed from host to container unless your not using OpenVPN and your in host mode |
-| `-e PUID=1000` | for UserID - see below for explanation |
-| `-e PGID=1000` | for GroupID - see below for explanation |
-| `-e XTEVE_DEBUG=0` | Set xTeVe debug level [ 0-3 ] Default: 0=OFF |
-| `-e DEBUG=false` | Set container debug [ true or false ] Default: false |
-| `-e XTEVE_BRANCH=master` | Set xTeVe git branch [ master|beta ] Default: master  |
-| `-v /config` | xTeVe library location. |
-| `-v /tmp/xteve` | xTeVe Location for the buffer files. |
-
-## Umask for running applications
-
-For all of our images we provide the ability to override the default umask settings for services started within the containers using the optional `-e UMASK=022` setting.
-Keep in mind umask is not chmod it subtracts from permissions based on it's value it does not add. Please read up [here](https://en.wikipedia.org/wiki/Umask) before asking for support.
+|        Parameter         | Function                                                                                           |
+|:------------------------:|----------------------------------------------------------------------------------------------------|
+|      `--net=bridge`      | Use bridge networking if runnign openvpn                                                           |
+|     `-p 34400:34400`     | Port needs to be passed from host to container unless your not using OpenVPN and your in host mode |
+|      `-p 8181:8181`      | Port mapping for Privoxy, needs to be passed from host to container unless your not using OpenVPN and your in host mode                                                                         |
+|      `-e PUID=1000`      | for UserID - see below for explanation                                                             |
+|      `-e PGID=1000`      | for GroupID - see below for explanation                                                            |
+|    `-e XTEVE_DEBUG=0`    | Set xTeVe debug level [ 0-3 ] Default: 0=OFF                                                       |
+|     `-e DEBUG=false`     | Set container debug [ true or false ] Default: false                                               |
+| `-e XTEVE_BRANCH=master` | Set xTeVe git branch [ master                                                                      |beta ] Default: master  |
+|       `-v /config`       | xTeVe library location.                                                                            |
+|     `-v /tmp/xteve`      | xTeVe Location for the buffer files.                                                               |
 
 ## User / Group Identifiers
 
@@ -80,35 +76,25 @@ Surfshark I have found to be the best for IPTV, less buffering but this could be
 If you are running the VPN then use bridge mode otherwise you will have issues on your host.
 
 #### List of OpenVPN parameters accepted by the container
-| Parameter | Function |
-| :----: | --- |
-| `--net=bridge` | Use Bridge Networking |
-| `--cap-add=NET_ADMIN` | Gives the container permission to make network changes |
-| `-e OPENVPN_USERNAME=username` | Your VPN provider username |
-| `-e OPENVPN_PASSWORD=password` | Your VPN provider password |
-| `-e OPENVPN_CONFIG=Ca Toronto` | Configuration file for the VPN location (Not required when using CUSTOM provider, will find the first file in the openvn directory) |
-| `-e OPENVPN_PROVIDER=PIA` | VPN Provider - SURFSHARK, PIA, VYPRVPN or CUSTOM |
-| `-e OPENVPN_OPTIONS=--ping 60 --ping-restart 180` | Custom OpenVPN options (Leave blank if your unsure, this is just an example) |
-| `-e OPENVPN_PROTOCOL=udp` | VPN Protocol udp or tcp (Not needed when using CUSTOM provider) |
-| `-e CREATE_TUN_DEVICE=true` | Should the container create /dev/net or are you mounting it |
-| `-e LOCAL_NETWORK=192.168.0.0/24` | Your local lan network (Required in order to reach xTeVe web gui) |
-| `-e NAME_SERVERS=209.222.18.222,209.222.18.218,37.235.1.174,37.235.1.177,1.1.1.1,1.0.0.1` | Containers DNS servers to use (Not required by default) Due to Google and OpenDNS supporting EDNS Client Subnet it is recommended NOT to use either of these |
+|                     Parameter                     | Function                                                                                                                                                     |
+|:-------------------------------------------------:|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+|                  `--net=bridge`                   | Use Bridge Networking                                                                                                                                        |
+|               `--cap-add=NET_ADMIN`               | Gives the container permission to make network changes, witout this openvpn will not work                                                                    |
+|          `-e OPENVPN_USERNAME=username`           | Your VPN provider username                                                                                                                                   |
+|          `-e OPENVPN_PASSWORD=password`           | Your VPN provider password                                                                                                                                   |
+|          `-e OPENVPN_CONFIG=Ca Toronto`           | Configuration file for the VPN location (Not required when using CUSTOM provider, will find the first file in the openvn directory)                          |
+|             `-e OPENVPN_PROVIDER=PIA`             | VPN Provider - SURFSHARK, PIA, VYPRVPN or CUSTOM                                                                                                             |
+|              `-e PRIVOXY_ENABLED=true`            | Enable Privoxy, only works if OpenVPN is also enabled                                                                                                             |
+| `-e OPENVPN_OPTIONS=--ping 60 --ping-restart 180` | Custom OpenVPN options (Leave blank if your unsure, this is just an example)                                                                                 |
+|             `-e OPENVPN_PROTOCOL=udp`             | VPN Protocol udp or tcp (Not needed when using CUSTOM provider)                                                                                              |
+|         `-e LOCAL_NETWORK=192.168.0.0/24`         | Your local lan network (Required in order to reach xTeVe web gui)                                                                                            |
+|         `-e NAME_SERVERS=1.1.1.1,1.0.0.1`         | Containers DNS servers to use (Not required by default) Due to Google and OpenDNS supporting EDNS Client Subnet it is recommended NOT to use either of these |
 
-#### PIA config files can be found here
+#### PIA, SURFSHARK and VyprVPN config files will be downloaded automatically for you if your based on the OPENVPN_PROVIDER value.
 
-https://www.privateinternetaccess.com/openvpn/openvpn.zip
+#### If you wish to use your own custom ovpn file and provider, just place your ovpn file in a folder called openvpn inside your config directory and change OPENVPN_PROVIDER=CUSTOM. If you wish to include all your custom provider config files then just place a subdir with all the files in openvpn/myprovider
 
-#### SURFSHARk config files can be found here
-
-https://my.surfshark.com/vpn/api/v1/server/configurations
-
-#### VyprVPN config files can be found here
-
-https://support.vyprvpn.com/hc/article_attachments/360052617332/Vypr_OpenVPN_20200320.zip
-
-#### If you wish to use your own custom ovpn file and provider, just place your ovpn file in a folder called openvpn inside your config directory and change OPENVPN_PROVIDER=CUSTOM. An openvpn folder will be created automatically on the first boot
-
-OPENVPN_CONFIG does not need to be set when OPENVPN_PROVIDER=CUSTOM and you have placed your own ovpn file in the openvpn directory. The first found ovpn file will be used.
+OPENVPN_CONFIG does not need to be set when OPENVPN_PROVIDER=CUSTOM and you have placed your own ovpn file in the openvpn directory. The first found ovpn file will be used. If you used a directory of all your providers then specify which file to use but without the .ovpn extension
 
 #### Testing VPN throughput with speedtest-cli
 
