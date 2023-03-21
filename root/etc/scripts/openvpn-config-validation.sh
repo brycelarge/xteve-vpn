@@ -40,7 +40,7 @@ if [[ "${VPN_PROVIDER}" == "custom" ]]; then
 
     # If the file exists then lets clean it and link our credentials files
     if [[ -f "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn" ]]; then
-        /etc/scripts/openvpn-config-clean.sh "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn"
+        # /etc/scripts/openvpn-config-clean.sh "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn"
         sed -i "s/auth-user-pass.*/auth-user-pass \/config\/openvpn\/custom-openvpn-credentials.txt/g" "${VPN_PROVIDER_CONFIGS}/${VPN_CONFIG}.ovpn"
     fi
 else
