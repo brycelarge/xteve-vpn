@@ -3,9 +3,10 @@
 mkdir -p /config/openvpn
 lsiown abc:abc /config/openvpn
 
+VPN_PROVIDER="${OPENVPN_PROVIDER,,}"
+
 if [[ "${OPENVPN_PROVIDER}" != "**None**" && "${OPENVPN_PROVIDER,,}" != "custom" ]]; then
     echo "[OpenVPN] fetching ${VPN_PROVIDER} config files" | ts '%Y-%m-%d %H:%M:%S'
-    VPN_PROVIDER="${OPENVPN_PROVIDER,,}"
 
     # fetch providers config files or deal with users config files
     if [[ ! -d "/config/openvpn/${VPN_PROVIDER}" && -d "/etc/openvpn/${VPN_PROVIDER}" ]]; then
