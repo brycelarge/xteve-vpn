@@ -1,9 +1,7 @@
 # [xTeVe Docker VPN](https://xteve.de/)
 
 > **IMPORTANT NOTICE:**
-> - This project is no longer actively maintained with VPN testing as I no longer use VPN services
-> - IPTV functionality cannot be verified as I no longer use IPTV services
-> - A new version with alternative software will be released when time permits
+> [p][b]⚠️ DEPRECATED - No Longer Maintained[/b][/p][p]This template is no longer maintained. Please use [b]tuliprox-vpn[/b] instead, which provides a more modern and actively maintained alternative.[/p][p]Search for [b]tuliprox-vpn[/b] in the Unraid Community Applications to find the replacement template.[/p]
 
 ## [Ubuntu base image used from linuxserver/docker-baseimage-ubuntu](https://github.com/linuxserver/docker-baseimage-ubuntu)
 
